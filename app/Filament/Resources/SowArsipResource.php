@@ -12,7 +12,7 @@ use Filament\Tables\Table;
 class SowArsipResource extends Resource
 {
     protected static ?string $model = SowArsip::class;
-
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
     protected static ?string $navigationLabel = 'Arsip SOW';
     protected static ?string $navigationGroup = 'Arsip SOW';
@@ -35,17 +35,20 @@ class SowArsipResource extends Resource
                     ->label('Tanggal Arsip')
                     ->dateTime(),
             ])
-            
+            ->defaultSort('created_at', 'desc')
             ->actions([
+                Tables\Actions\ActionGroup::make([
                 Tables\Actions\ViewAction::make(),
-
                 Tables\Actions\DeleteAction::make()
                 ->label('Hapus Arsip')
                 ->requiresConfirmation()
                 ->modalHeading('Hapus Arsip SOW')
                 ->modalDescription('Semua data di dalam arsip ini juga akan ikut terhapus.')
                 ->modalSubmitActionLabel('Ya, Hapus'),
-                
+                ])
+                ->label('More') 
+                ->icon('heroicon-m-ellipsis-vertical') 
+                ->color('primary')
             ]);
     }
 

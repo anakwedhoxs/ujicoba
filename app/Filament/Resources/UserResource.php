@@ -19,6 +19,7 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationLabel = 'Users';
     protected static ?string $pluralModelLabel = 'Users';
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {
@@ -71,14 +72,15 @@ class UserResource extends Resource
                     ->dateTime(),
             ])
             ->actions([
+                Tables\Actions\ActionGroup::make([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                ->label('More') 
+                ->icon('heroicon-m-ellipsis-vertical') 
+                ->color('primary')
             ]);
+                
     }
 
     public static function getPages(): array

@@ -13,8 +13,9 @@ class Login extends BaseLogin
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->label('Nama')
+                TextInput::make('email')
+                    ->label('Email')
+                    ->email()
                     ->required()
                     ->autofocus(),
 
@@ -29,7 +30,7 @@ class Login extends BaseLogin
     protected function getCredentialsFromFormData(array $data): array
     {
         return [
-            'name' => $data['name'],      // ⬅️ PAKAI name
+            'email' => $data['email'],
             'password' => $data['password'],
         ];
     }
@@ -37,7 +38,7 @@ class Login extends BaseLogin
     protected function throwFailureValidationException(): never
     {
         throw ValidationException::withMessages([
-            'data.name' => 'Nama atau password salah',
+            'data.email' => 'Email atau password salah',
         ]);
     }
 }

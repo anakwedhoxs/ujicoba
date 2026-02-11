@@ -1,8 +1,13 @@
 <?php
 
+
 namespace App\Providers;
 
+
+use App\Models\Sow;
+use App\Observers\SowObserver;
 use Illuminate\Support\ServiceProvider;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,11 +19,12 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
+
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
-        //
+        Sow::observe(SowObserver::class);
     }
 }

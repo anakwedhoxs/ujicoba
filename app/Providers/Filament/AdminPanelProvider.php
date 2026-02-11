@@ -21,6 +21,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Widgets\StatsOverview; 
 use App\Filament\Widgets\JumlahKategorisChart;
 use Illuminate\Support\HtmlString;
+use App\Filament\Pages\Auth\CustomLogin;
 
 
 class AdminPanelProvider extends PanelProvider
@@ -31,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('sow')
-            ->login(Login::class) // ⬅️ INI WAJIB
+            ->login(CustomLogin::class) // ⬅️ INI WAJIB
             ->colors([
                 'primary' => Color::Purple,
             ])

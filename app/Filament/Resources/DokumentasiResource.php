@@ -18,10 +18,10 @@ use Maatwebsite\Excel\Facades\Excel;
 class DokumentasiResource extends Resource
 {
     protected static ?string $model = Dokumentasi::class;
-
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 1;
     protected static ?string $navigationIcon = 'heroicon-s-photo';
     protected static ?string $navigationLabel = 'Dokumentasi';
+    protected static ?string $navigationGroup = 'SOW';
 
     /* ================= FORM ================= */
     public static function form(Form $form): Form
@@ -46,8 +46,8 @@ class DokumentasiResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama_barang')
-                    ->label('Nama Barang')
-                    ->searchable(),
+                    ->label('Nama Barang'),
+                    
 
                 Tables\Columns\ImageColumn::make('foto')
                     ->disk('public')
@@ -64,6 +64,7 @@ class DokumentasiResource extends Resource
                     ->form([
                         Forms\Components\TextInput::make('judul')
                             ->label('Judul Arsip')
+                            ->placeholder('ex:SOWx-blnthn') 
                             ->required(),
                     ])
                     ->action(function (array $data) {
@@ -110,9 +111,14 @@ class DokumentasiResource extends Resource
                     ),
             ])
             ->actions([
+                Tables\Actions\ActionGroup::make([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                ])
+                ->label('More') 
+                ->icon('heroicon-m-ellipsis-vertical') 
+                ->color('primary')
             ]);
     }
 

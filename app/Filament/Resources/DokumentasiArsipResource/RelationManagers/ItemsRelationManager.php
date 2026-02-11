@@ -7,32 +7,14 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\DokumentasiArsipExport;
 
 class ItemsRelationManager extends RelationManager
 {
     protected static string $relationship = 'items';
-
     protected static ?string $title = 'Item Dokumentasi';
-
-    public function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('nama_barang')
-                    ->label('Nama Barang')
-                    ->required()
-                    ->maxLength(255),
-
-                Forms\Components\FileUpload::make('foto')
-                    ->label('Foto')
-                    ->image()
-                    ->disk('public')
-                    ->directory('uploads')
-                    ->visibility('public')
-                    ->imagePreviewHeight(150)
-                    ->nullable(),
-            ]);
-    }
 
     public function table(Table $table): Table
     {
@@ -53,10 +35,20 @@ class ItemsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
+
+                Action::make('export')
+                    ->label('Export Dokumentasi Arsip')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function () {
+                        return Excel::download(
+                            new DokumentasiArsipExport($this->ownerRecord->id),
+                            'dokumentasi_arsip.xlsx'
+                        );
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->paginated(false); // grid enak tanpa pagination
+            ->paginated(false);
     }
 }

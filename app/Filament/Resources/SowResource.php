@@ -22,6 +22,8 @@ class SOWResource extends Resource
     protected static ?string $model = Sow::class;
     protected static ?string $navigationIcon = 'heroicon-s-queue-list';
     protected static ?string $navigationLabel = 'Data SOW';
+    protected static ?string $navigationGroup = 'SOW';
+    protected static ?int $navigationSort = 1 ;
 
     /* ================= FORM ================= */
     public static function form(Form $form): Form
@@ -42,20 +44,20 @@ class SOWResource extends Resource
 
                 /* ===== KATEGORI ===== */
                 Forms\Components\Select::make('kategori')
-    ->label('Hardware')
-    ->options(
-        Inventaris::query()
-            ->select('Kategori')
-            ->distinct()
-            ->pluck('Kategori', 'Kategori')
-    )
-    ->live()
-    ->afterStateUpdated(function (callable $set, $state, $livewire) {
-        if ($livewire instanceof Pages\EditSOW) return;
-        $set('merk', null);
-        $set('inventaris_id', null);
-    })
-    ->required(),
+                ->label('Hardware')
+                ->options(
+                    Inventaris::query()
+                        ->select('Kategori')
+                        ->distinct()
+                        ->pluck('Kategori', 'Kategori')
+                )
+                ->live()
+                ->afterStateUpdated(function (callable $set, $state, $livewire) {
+                    if ($livewire instanceof Pages\EditSOW) return;
+                    $set('merk', null);
+                    $set('inventaris_id', null);
+                })
+                ->required(),
 
 
                 /* ===== MERK ===== */
@@ -90,8 +92,12 @@ class SOWResource extends Resource
                     ->required(),
 
                 /* ===== TANGGAL & INFO ===== */
-                Forms\Components\DatePicker::make('tanggal_penggunaan'),
-                Forms\Components\DatePicker::make('tanggal_perbaikan'),
+                Forms\Components\DatePicker::make('tanggal_penggunaan')
+                    ->displayFormat('d F Y')
+                    ->locale('fr'),
+                Forms\Components\DatePicker::make('tanggal_perbaikan')
+                    ->displayFormat('d F Y')
+                    ->locale('fr'),
                 Forms\Components\TextInput::make('nomor_perbaikan'),
                 Forms\Components\Checkbox::make('helpdesk'),
                 Forms\Components\Checkbox::make('form'),
@@ -112,12 +118,21 @@ class SOWResource extends Resource
             /* ===== KETERANGAN ===== */
             Forms\Components\Textarea::make('keterangan')->columnSpanFull(),
 
+            /* ===== PIC ===== */
+            Forms\Components\TextInput::make('pic') 
+            ->label('PIC') 
+            ->placeholder('Nama penanggung jawab') 
+            ->maxLength(255) 
+            ->required(),
+
             /* ===== FOTO ===== */
             Forms\Components\FileUpload::make('foto')
                 ->image()
                 ->disk('public')
                 ->directory('uploads')
                 ->visibility('public')
+                ->enableDownload()
+                ->enableOpen()
                 ->columnSpanFull(),
 
             /* ===== STATUS ===== */
@@ -139,13 +154,14 @@ class SOWResource extends Resource
                 Tables\Columns\TextColumn::make('inventaris.Kategori')->label('Hardware')->searchable(),
                 Tables\Columns\TextColumn::make('inventaris.Merk')->label('Merk')->searchable(),
                 Tables\Columns\TextColumn::make('inventaris.Seri')->label('Seri')->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_penggunaan')->date(),
-                Tables\Columns\TextColumn::make('tanggal_perbaikan')->date(),
+                Tables\Columns\TextColumn::make('tanggal_penggunaan') ->label('Tanggal Penggunaan') ->date('d/m/Y'),
+                Tables\Columns\TextColumn::make('tanggal_perbaikan') ->label('Tanggal Perbaikan') ->date('d/m/Y'),
                 Tables\Columns\IconColumn::make('helpdesk')->boolean(),
                 Tables\Columns\IconColumn::make('form')->boolean(),
                 Tables\Columns\TextColumn::make('nomor_perbaikan')->searchable(),
                 Tables\Columns\TextColumn::make('hostname')->searchable(),
                 Tables\Columns\TextColumn::make('divisi')->searchable(),
+                Tables\Columns\TextColumn::make('pic')->label('PIC')->searchable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->colors([
                         'danger' => true,
@@ -165,15 +181,29 @@ class SOWResource extends Resource
             ->headerActions([
 
                 /* ===== EXPORT ===== */
+                
                 Action::make('export')
-                    ->label('Export')
-                    ->icon('heroicon-o-arrow-down-tray')
-                    ->action(function ($livewire) {
-                        $divisi = $livewire->getTableFilters()?->get('divisi')?->getState();
-                        return Excel::download(new SowExport($divisi), 'data-sow.xlsx');
-                    }),
+                ->label('Export')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->disabled(fn () => !Sow::where('status', false)->exists())
+                ->action(function (Tables\Table $table) {
 
-                /* ===== ACCEPT ALL ===== */
+                    $filters = $table->getFiltersForm()->getState();
+
+                    // 🔑 AMBIL VALUE PERTAMA DARI ARRAY
+                    $divisi = $filters['divisi'] ?? null;
+
+                    if (is_array($divisi)) {
+                        $divisi = reset($divisi); // ⬅️ INI KUNCI UTAMANYA
+                    }
+
+                    return Excel::download(
+                        new SowExport($divisi),
+                        'data-sow.xlsx'
+                    );
+                }),
+
+                            /* ===== ACCEPT ALL ===== */
                 Action::make('accept_all')
                     ->label('Accept All')
                     ->icon('heroicon-s-check-circle')
@@ -186,9 +216,10 @@ class SOWResource extends Resource
                 Action::make('arsipkan')
                     ->label('Arsipkan')
                     ->icon('heroicon-o-archive-box')
+                    ->disabled(fn () => !Sow::where('status', false)->exists())
                     ->color('warning')
                     ->form([
-                        Forms\Components\TextInput::make('judul')->label('Judul Arsip')->required(),
+                        Forms\Components\TextInput::make('judul')->label('Judul Arsip') ->placeholder('ex:SOWx-blnthn') ->required(),
                     ])
                     ->requiresConfirmation()
                     ->action(function (array $data) {
@@ -212,6 +243,8 @@ class SOWResource extends Resource
                                     'hostname' => $sow->hostname,
                                     'divisi' => $sow->divisi,
                                     'keterangan' => $sow->keterangan,
+                                    'pic' => $sow->pic,
+                                    'foto' => $sow->foto,
                                 ]);
                             }
                         });
@@ -222,9 +255,14 @@ class SOWResource extends Resource
                     }),
             ])
             ->actions([
+                Tables\Actions\ActionGroup::make([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                ])
+                ->label('More') 
+                ->icon('heroicon-m-ellipsis-vertical') 
+                ->color('primary')
             ]);
     }
 

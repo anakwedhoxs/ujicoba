@@ -13,14 +13,14 @@ return new class extends Migration
 public function up(): void
 {
     Schema::table('sows', function (Blueprint $table) {
-        $table->string('status')->nullable()->change();
+        $table->string('status')->nullable()->after('keterangan');
     });
 }
 
 public function down(): void
 {
     Schema::table('sows', function (Blueprint $table) {
-        $table->boolean('status')->default(false)->change();
+        $table->boolean('status')->default(false);
     });
 }
 

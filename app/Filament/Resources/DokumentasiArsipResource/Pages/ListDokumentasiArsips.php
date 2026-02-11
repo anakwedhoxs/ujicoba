@@ -10,10 +10,5 @@ class ListDokumentasiArsips extends ListRecords
 {
     protected static string $resource = DokumentasiArsipResource::class;
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
+   
 }

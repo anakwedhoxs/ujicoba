@@ -17,6 +17,8 @@ class SowArsipItem extends Model
         'hostname',
         'divisi',
         'keterangan',
+        'pic',
+
     ];
 
     public function inventaris()

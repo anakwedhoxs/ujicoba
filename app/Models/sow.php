@@ -16,6 +16,7 @@ class Sow extends Model
         'hostname',
         'divisi',
         'keterangan',
+        'pic',
         'foto',
         'status',
     ];
@@ -33,4 +34,5 @@ class Sow extends Model
     {
         return $this->belongsTo(Inventaris::class);
     }
+
 }

@@ -9,11 +9,4 @@ use Filament\Resources\Pages\ListRecords;
 class ListSowArsips extends ListRecords
 {
     protected static string $resource = SowArsipResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
 }
