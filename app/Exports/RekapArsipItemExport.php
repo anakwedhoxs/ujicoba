@@ -65,7 +65,7 @@ class RekapArsipItemExport implements
         return [
             'A' => 6,
             'B' => 18,
-            'C' => 14.33,
+            'C' => 8,
             'D' => 14.33,
             'E' => 14.33,
             'F' => 14.33,
