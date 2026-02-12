@@ -175,5 +175,28 @@ class SowExport implements
         $sheet->getStyle("K8:K{$lastRow}")->getAlignment()->setHorizontal('center');
 
         $sheet->getStyle('A6:L7')->getAlignment()->setVertical('center');
+
+        $lastRow = $sheet->getHighestRow();
+
+        // Checklist Helpdesk & Form rata tengah
+        $sheet->getStyle("I8:J{$lastRow}")->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+        // Supaya nomor juga rata tengah
+        $sheet->getStyle("A8:A{$lastRow}")->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+        // Tanggal rata tengah
+        $sheet->getStyle("G8:H{$lastRow}")->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER)
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
+        // Nomor perbaikan rata tengah
+        $sheet->getStyle("K8:K{$lastRow}")->getAlignment()
+            ->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT)
+            ->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+
     }
 }
