@@ -16,6 +16,19 @@ class EditSOW extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    /**
+     * Transfer pic_new ke pic jika dipilih tambah baru
+     */
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if ($data['pic'] === '__new__' && !empty($data['pic_new'])) {
+            $data['pic'] = $data['pic_new'];
+        }
+        unset($data['pic_new']);
+        return $data;
+    }
+
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
