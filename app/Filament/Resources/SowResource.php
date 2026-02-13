@@ -186,7 +186,7 @@ class SOWResource extends Resource
                 Action::make('export')
                 ->label('Export')
                 ->icon('heroicon-o-arrow-down-tray')
-                ->disabled(fn () => !Sow::where('status', false)->exists())
+                ->disabled(fn (Tables\Table $table) => $table->getQuery()->where('status', true)->exists())
                 ->action(function (Tables\Table $table) {
 
                     $filters = $table->getFiltersForm()->getState();
@@ -220,7 +220,7 @@ class SOWResource extends Resource
                 Action::make('arsipkan')
                     ->label('Arsipkan')
                     ->icon('heroicon-o-archive-box')
-                    ->disabled(fn () => !Sow::where('status', false)->exists())
+                    ->disabled(fn (Tables\Table $table) => $table->getQuery()->where('status', true)->exists())
                     ->color('warning')
                     ->form([
                         Forms\Components\TextInput::make('judul')->label('Judul Arsip') ->placeholder('ex:SOWx-blnthn') ->required(),
