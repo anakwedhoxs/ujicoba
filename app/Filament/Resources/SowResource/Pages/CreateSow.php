@@ -11,14 +11,16 @@ class CreateSOW extends CreateRecord
     protected static string $resource = SOWResource::class;
 
     /**
-     * Transfer pic_new ke pic jika dipilih tambah baru
+     * Transfer pic_new ke pic_id jika dipilih tambah baru
      */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        if ($data['pic'] === '__new__' && !empty($data['pic_new'])) {
-            $data['pic'] = $data['pic_new'];
+        if (isset($data['pic_id']) && $data['pic_id'] === '__new__' && !empty($data['pic_new'])) {
+            $data['pic_id'] = $data['pic_new'];
         }
-        unset($data['pic_new']);
+        if (isset($data['pic_new'])) {
+            unset($data['pic_new']);
+        }
         return $data;
     }
 
