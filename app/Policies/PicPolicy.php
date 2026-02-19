@@ -10,59 +10,38 @@ class PicPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        return true;
+        return true; // semua user bisa melihat daftar PIC
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Pic $pic): bool
     {
-        return true;
+        return true; // semua user bisa melihat detail PIC
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('super_admin'); // hanya super_admin bisa tambah
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, Pic $pic): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('super_admin'); // hanya super_admin bisa edit
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Pic $pic): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('super_admin'); // hanya super_admin bisa hapus
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
     public function restore(User $user, Pic $pic): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('super_admin');
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
     public function forceDelete(User $user, Pic $pic): bool
     {
-        return $user->hasRole('admin');
+        return $user->hasRole('super_admin');
     }
 }

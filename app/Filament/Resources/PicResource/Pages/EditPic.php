@@ -10,11 +10,6 @@ class EditPic extends EditRecord
 {
     protected static string $resource = PicResource::class;
 
-    protected function authorizeAccess(): void
-    {
-        abort_if(!auth()->user()->hasRole('admin'), 403);
-    }
-
     protected function getHeaderActions(): array
     {
         return [
