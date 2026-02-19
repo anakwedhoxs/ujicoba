@@ -196,7 +196,16 @@ class SOWResource extends Resource
         ->icon('heroicon-o-arrow-down-tray')
         ->color('primary')
         ->disabled(fn () => Sow::whereNull('status')->orWhere('status', true)->exists())
-        ->action(fn () => Excel::download(new SowExport, 'data-sow.xlsx')),
+        ->action(function () {
+
+                    $tanggal = now()->format('d-m-Y');
+                    $namaFile = "data-sow-{$tanggal}.xlsx";
+
+                    return Excel::download(
+                        new SowExport(),
+                        $namaFile
+                    );
+                }),
 
     Action::make('accept')
         ->label('Accept')
