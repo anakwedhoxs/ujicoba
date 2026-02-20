@@ -227,7 +227,10 @@ class SOWResource extends Resource
                     ->icon('heroicon-o-archive-box')
                     ->color('warning')
                     ->form([
-                        Forms\Components\TextInput::make('judul')->label('Judul Arsip')->required(),
+                         Forms\Components\TextInput::make('judul')
+                            ->label('Judul Arsip')
+                            ->placeholder('ex:SOWx-blnthn') 
+                            ->required(),
                     ])
                     ->disabled(fn () => Sow::whereNull('status')->orWhere('status', true)->exists())
                     ->requiresConfirmation()
