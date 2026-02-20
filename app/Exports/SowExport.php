@@ -54,34 +54,34 @@ class SowExport implements
     }
 
     public function collection()
-    {
-        return Sow::with('inventaris')
-            ->when($this->divisi, fn (Builder $q) =>
-                $q->where('divisi', $this->divisi)
-            )
-            ->orderBy('tanggal_penggunaan', 'desc')
-            ->get();
-    }
+{
+    return Sow::with(['inventaris', 'hostname']) // tambahkan hostname
+        ->when($this->divisi, fn (Builder $q) =>
+            $q->where('divisi', $this->divisi)
+        )
+        ->orderBy('tanggal_penggunaan', 'desc')
+        ->get();
+}
 
     public function map($sow): array
-    {
-        static $no = 1;
+{
+    static $no = 1;
 
-        return [
-            $no++,
-            strtoupper($sow->inventaris?->Kategori ?? '-'),
-            strtoupper($sow->inventaris?->Merk ?? '-'),
-            strtoupper($sow->inventaris?->Seri ?? '-'),
-            $sow->hostname ?? '-',
-            $sow->divisi ?? '-',
-            optional($sow->tanggal_penggunaan)->format('d-m-Y'),
-            optional($sow->tanggal_perbaikan)->format('d-m-Y'),
-            $sow->helpdesk ? '✓' : '',
-            $sow->form ? '✓' : '',
-            $sow->nomor_perbaikan ?? '-',
-            $sow->keterangan ?? '-',
-        ];
-    }
+    return [
+        $no++,
+        strtoupper($sow->inventaris?->Kategori ?? '-'),
+        strtoupper($sow->inventaris?->Merk ?? '-'),
+        strtoupper($sow->inventaris?->Seri ?? '-'),
+        $sow->hostname?->nama ?? '-', // ✅ FIX DI SINI
+        $sow->divisi ?? '-',
+        optional($sow->tanggal_penggunaan)->format('d-m-Y'),
+        optional($sow->tanggal_perbaikan)->format('d-m-Y'),
+        $sow->helpdesk ? '✓' : '',
+        $sow->form ? '✓' : '',
+        $sow->nomor_perbaikan ?? '-',
+        $sow->keterangan ?? '-',
+    ];
+}
 
     public function startCell(): string
     {

@@ -272,7 +272,7 @@ class SOWResource extends Resource
                                     'helpdesk' => $sow->helpdesk,
                                     'form' => $sow->form,
                                     'nomor_perbaikan' => $sow->nomor_perbaikan,
-                                    'hostname' => $sow->hostname,
+                                    'hostname' => $sow->hostname?->nama,
                                     'divisi' => $sow->divisi,
                                     'keterangan' => $sow->keterangan,
                                     'pic' => $sow->pic->nama,
