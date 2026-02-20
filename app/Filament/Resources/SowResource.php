@@ -51,6 +51,7 @@ class SOWResource extends Resource
                         $set('merk', null);
                         $set('inventaris_id', null);
                     })
+                    ->searchable()
                     ->required(),
 
                 Forms\Components\Select::make('merk')
@@ -70,6 +71,7 @@ class SOWResource extends Resource
                         $livewire instanceof Pages\CreateSOW ||
                         $livewire instanceof Pages\EditSOW
                     )
+                    ->searchable()
                     ->afterStateUpdated(fn (callable $set) =>
                         $set('inventaris_id', null)
                     )
@@ -163,7 +165,17 @@ class SOWResource extends Resource
             ->downloadable() // aktifkan tombol download
             ->columnSpanFull(),
 
+             Forms\Components\Toggle::make('status')
+                ->label('Rejected')
+                ->helperText('ON = Rejected | OFF = Accept')
+                ->onColor('danger')
+                ->offColor('success')
+                ->default(false)
+                ->visible(fn ($record) => auth()->user()?->hasRole('super_admin') && $record !== null),
+
         ]);
+
+        
     }
 
     /* ================= TABLE ================= */
