@@ -21,9 +21,20 @@ return new class extends Migration
         $table->boolean('helpdesk')->default(false);
         $table->boolean('form')->default(false);
         $table->string('nomor_perbaikan')->nullable();
-        $table->string('hostname')->nullable();
+        $table->foreignId('hostname_id')
+                ->nullable()
+                ->after('nomor_perbaikan') // ✅ posisi setelah nomor_perbaikan
+                ->constrained('hostnames')
+                ->onDelete('set null');
         $table->string('divisi')->nullable();
+        $table->foreignId('pic_id')
+              ->nullable()
+              ->constrained('pics')
+              ->onDelete('set null');
         $table->text('keterangan')->nullable();
+        $table->string('foto')->nullable()->default('');
+        $table->string('status')->nullable();
+        
 
         $table->timestamps();
 });

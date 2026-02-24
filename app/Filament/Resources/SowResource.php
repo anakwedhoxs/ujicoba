@@ -133,9 +133,13 @@ class SOWResource extends Resource
 
                 Forms\Components\DatePicker::make('tanggal_penggunaan'),
                 Forms\Components\DatePicker::make('tanggal_perbaikan'),
+                Forms\Components\Grid::make(2)
+                    ->columnSpan(2)
+                    ->schema([
+                        Forms\Components\Checkbox::make('form'),
+                        Forms\Components\Checkbox::make('helpdesk'),
+                    ]),
                 Forms\Components\TextInput::make('nomor_perbaikan'),
-                Forms\Components\Checkbox::make('helpdesk'),
-                Forms\Components\Checkbox::make('form'),
                 Forms\Components\Select::make('hostname_id')
                     ->label('Hostname')
                     ->relationship('hostname', 'nama')

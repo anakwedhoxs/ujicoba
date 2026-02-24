@@ -24,6 +24,8 @@ return new class extends Migration
             $table->string('hostname')->nullable();
             $table->string('divisi')->nullable();
             $table->text('keterangan')->nullable();
+            $table->string('pic')->nullable();
+            $table->string('foto')->nullable();
             $table->timestamps();
         });
     }
