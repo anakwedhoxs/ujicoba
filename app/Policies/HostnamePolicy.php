@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Pic;
+use App\Models\Hostname;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PicPolicy
+class HostnamePolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class PicPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_pic');
+        return $user->can('view_any_hostname');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Pic $pic): bool
+    public function view(User $user, Hostname $hostname): bool
     {
-        return $user->can('view_pic');
+        return $user->can('view_hostname');
     }
 
     /**
@@ -31,23 +31,23 @@ class PicPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_pic');
+        return $user->can('create_hostname');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Pic $pic): bool
+    public function update(User $user, Hostname $hostname): bool
     {
-        return $user->can('update_pic');
+        return $user->can('update_hostname');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Pic $pic): bool
+    public function delete(User $user, Hostname $hostname): bool
     {
-        return $user->can('delete_pic');
+        return $user->can('delete_hostname');
     }
 
     /**
@@ -55,15 +55,15 @@ class PicPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_pic');
+        return $user->can('delete_any_hostname');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Pic $pic): bool
+    public function forceDelete(User $user, Hostname $hostname): bool
     {
-        return $user->can('force_delete_pic');
+        return $user->can('force_delete_hostname');
     }
 
     /**
@@ -71,15 +71,15 @@ class PicPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_pic');
+        return $user->can('force_delete_any_hostname');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Pic $pic): bool
+    public function restore(User $user, Hostname $hostname): bool
     {
-        return $user->can('restore_pic');
+        return $user->can('restore_hostname');
     }
 
     /**
@@ -87,15 +87,15 @@ class PicPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_pic');
+        return $user->can('restore_any_hostname');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Pic $pic): bool
+    public function replicate(User $user, Hostname $hostname): bool
     {
-        return $user->can('replicate_pic');
+        return $user->can('replicate_hostname');
     }
 
     /**
@@ -103,6 +103,6 @@ class PicPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_pic');
+        return $user->can('reorder_hostname');
     }
 }

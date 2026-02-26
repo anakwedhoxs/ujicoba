@@ -23,7 +23,6 @@ return new class extends Migration
         $table->string('nomor_perbaikan')->nullable();
         $table->foreignId('hostname_id')
                 ->nullable()
-                ->after('nomor_perbaikan') // ✅ posisi setelah nomor_perbaikan
                 ->constrained('hostnames')
                 ->onDelete('set null');
         $table->string('divisi')->nullable();

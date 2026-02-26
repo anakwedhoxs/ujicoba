@@ -3,10 +3,10 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\Pic;
+use App\Models\Rekap;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class PicPolicy
+class RekapPolicy
 {
     use HandlesAuthorization;
 
@@ -15,15 +15,15 @@ class PicPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_pic');
+        return $user->can('view_any_rekap');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Pic $pic): bool
+    public function view(User $user, Rekap $rekap): bool
     {
-        return $user->can('view_pic');
+        return $user->can('view_rekap');
     }
 
     /**
@@ -31,23 +31,23 @@ class PicPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_pic');
+        return $user->can('create_rekap');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Pic $pic): bool
+    public function update(User $user, Rekap $rekap): bool
     {
-        return $user->can('update_pic');
+        return $user->can('update_rekap');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Pic $pic): bool
+    public function delete(User $user, Rekap $rekap): bool
     {
-        return $user->can('delete_pic');
+        return $user->can('delete_rekap');
     }
 
     /**
@@ -55,15 +55,15 @@ class PicPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_pic');
+        return $user->can('delete_any_rekap');
     }
 
     /**
      * Determine whether the user can permanently delete.
      */
-    public function forceDelete(User $user, Pic $pic): bool
+    public function forceDelete(User $user, Rekap $rekap): bool
     {
-        return $user->can('force_delete_pic');
+        return $user->can('force_delete_rekap');
     }
 
     /**
@@ -71,15 +71,15 @@ class PicPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_pic');
+        return $user->can('force_delete_any_rekap');
     }
 
     /**
      * Determine whether the user can restore.
      */
-    public function restore(User $user, Pic $pic): bool
+    public function restore(User $user, Rekap $rekap): bool
     {
-        return $user->can('restore_pic');
+        return $user->can('restore_rekap');
     }
 
     /**
@@ -87,15 +87,15 @@ class PicPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_pic');
+        return $user->can('restore_any_rekap');
     }
 
     /**
      * Determine whether the user can replicate.
      */
-    public function replicate(User $user, Pic $pic): bool
+    public function replicate(User $user, Rekap $rekap): bool
     {
-        return $user->can('replicate_pic');
+        return $user->can('replicate_rekap');
     }
 
     /**
@@ -103,6 +103,6 @@ class PicPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_pic');
+        return $user->can('reorder_rekap');
     }
 }
