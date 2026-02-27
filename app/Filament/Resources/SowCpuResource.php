@@ -208,7 +208,7 @@ class SowCpuResource extends Resource
                 ->color('success')
                 ->requiresConfirmation()
                 ->action(function () {
-                    SowPc::query()->update(['status' => false]);
+                    SowCpu::query()->update(['status' => false]);
                     Notification::make()
                         ->title('Semua data berhasil di Accept')
                         ->success()

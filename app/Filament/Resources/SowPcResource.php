@@ -14,6 +14,7 @@ use Filament\Tables\Actions\Action;
 use Filament\Notifications\Notification;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SowPcExport;
+use App\Models\SowPcArsip;
 
 class SowPcResource extends Resource
 {
@@ -53,8 +54,8 @@ class SowPcResource extends Resource
                             })
                             ->toArray()
                     )
-                    ->searchable()
-                    ->required(),
+                    ->searchable(),
+                
 
                 Forms\Components\Select::make('prosesor_id')
                         ->label('PROCESSOR')
@@ -67,8 +68,8 @@ class SowPcResource extends Resource
                             })
                             ->toArray()
                     )
-                    ->searchable()
-                    ->required(),
+                    ->searchable(),
+                
 
                 Forms\Components\Select::make('ram_id')
                     ->label('RAM')
@@ -81,8 +82,8 @@ class SowPcResource extends Resource
                             })
                             ->toArray()
                     )
-                    ->searchable()
-                    ->required(),
+                    ->searchable(),
+                    
 
                 Forms\Components\Select::make('motherboard_id')
                     ->label('MOTHERBOARD')
@@ -95,8 +96,8 @@ class SowPcResource extends Resource
                             })
                             ->toArray()
                     )
-                    ->searchable()
-                    ->required(),
+                    ->searchable(),
+                    
 
                     Forms\Components\Select::make('pic_id')
                     ->label('PIC')
@@ -216,20 +217,20 @@ class SowPcResource extends Resource
                             );
                         }),
 
-                        Action::make('accept')
-                ->label('Accept')
-                ->icon('heroicon-o-check-circle')
-                ->color('success')
-                ->requiresConfirmation()
-                ->action(function () {
-                    SowPc::query()->update(['status' => false]);
-                    Notification::make()
-                        ->title('Semua data berhasil di Accept')
-                        ->success()
-                        ->send();
-                }),
-            ])
-            
+                Action::make('accept')
+                    ->label('Accept')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->action(function () {
+                        SowPc::query()->update(['status' => false]);
+                        Notification::make()
+                            ->title('Semua data berhasil di Accept')
+                            ->success()
+                            ->send();
+                    }),
+
+            ])      
              ->actions([
                 Tables\Actions\ActionGroup::make([
                 Tables\Actions\EditAction::make(),

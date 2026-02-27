@@ -114,6 +114,40 @@ class SowCpuExport implements
             ],
         ]);
 
+        /** -----------------------------
+         *  Blok tanda tangan kanan atas
+         * ----------------------------- */
+        $sheet->setCellValue('I2', 'Dibuat');
+        $sheet->setCellValue('J2', 'Diketahui');
+        $sheet->setCellValue('K2', 'Disetujui');
+        $sheet->setCellValue('L2', 'Diterima');
+
+        $sheet->setCellValue('K4', 'GM');
+        $sheet->setCellValue('L4', 'GA');
+
+        // Atur tinggi baris tanda tangan
+        $sheet->getRowDimension(2)->setRowHeight(10);
+        $sheet->getRowDimension(3)->setRowHeight(40);
+        $sheet->getRowDimension(4)->setRowHeight(10);
+
+        // Atur posisi tengah vertikal untuk GM dan GA
+        $sheet->getStyle('K3:L3')->getAlignment()->setVertical('center');
+
+        // Styling blok tanda tangan
+        $sheet->getStyle('I2:L2')->applyFromArray([
+            'font' => ['bold' => true],
+            'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
+        ]);
+
+        $sheet->getStyle('I2:L4')->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => 'thin']],
+        ]);
+
+        $sheet->getStyle('I2:L4')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('I2:L4')->getAlignment()->setVertical('center');
+
+
+
         // Header kolom baris 6 dan 7
         $sheet->setCellValue('A6', 'No');
         $sheet->setCellValue('B6', 'PROCESSOR');

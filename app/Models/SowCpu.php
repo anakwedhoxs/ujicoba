@@ -30,6 +30,14 @@ class SowCpu extends Model
         'status',
     ];
 
+    protected $casts = [
+    'tanggal_penggunaan' => 'date',
+    'tanggal_perbaikan' => 'date',
+    'helpdesk' => 'boolean',
+    'form' => 'boolean',
+    'status' => 'boolean',
+];
+
 
 
 public function prosesor()

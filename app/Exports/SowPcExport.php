@@ -111,13 +111,13 @@ class SowPcExport implements
         ),
 
         // MOTHERBOARD (Gabung Merk dan Seri)
-        strtoupper($sow->motherboard?->Merk ?? '-' . ' ' . $sow->motherboard?->Seri ?? '-'),
+        strtoupper(($sow->motherboard?->Merk ?? '-') . ' ' . ($sow->motherboard?->Seri ?? '-')),
 
-        optional($sow->tanggal_perbaikan)->format('d/m/Y'),
-        optional($sow->tanggal_penggunaan)->format('Y'),
+        optional($sow->tanggal_penggunaan)->format('d-m-Y'),
+        optional($sow->tanggal_perbaikan)->format('d-m-Y'),
 
-        $sow->helpdesk ? 'V' : '',
-        $sow->form ? 'V' : '',
+        $sow->helpdesk ? '✓' : '',
+        $sow->form ? '✓' : '',
 
         $sow->nomor_perbaikan ?? '-',
         $sow->hostname?->nama ?? '-',
@@ -156,6 +156,39 @@ class SowPcExport implements
                 'vertical' => Alignment::VERTICAL_CENTER
             ],
         ]);
+
+        /** -----------------------------
+         *  Blok tanda tangan kanan atas
+         * ----------------------------- */
+        $sheet->setCellValue('I2', 'Dibuat');
+        $sheet->setCellValue('J2', 'Diketahui');
+        $sheet->setCellValue('K2', 'Disetujui');
+        $sheet->setCellValue('L2', 'Diterima');
+
+        $sheet->setCellValue('K4', 'GM');
+        $sheet->setCellValue('L4', 'GA');
+
+        // Atur tinggi baris tanda tangan
+        $sheet->getRowDimension(2)->setRowHeight(10);
+        $sheet->getRowDimension(3)->setRowHeight(40);
+        $sheet->getRowDimension(4)->setRowHeight(10);
+
+        // Atur posisi tengah vertikal untuk GM dan GA
+        $sheet->getStyle('K3:L3')->getAlignment()->setVertical('center');
+
+        // Styling blok tanda tangan
+        $sheet->getStyle('I2:L2')->applyFromArray([
+            'font' => ['bold' => true],
+            'alignment' => ['horizontal' => 'center', 'vertical' => 'center'],
+        ]);
+
+        $sheet->getStyle('I2:L4')->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => 'thin']],
+        ]);
+
+        $sheet->getStyle('I2:L4')->getAlignment()->setHorizontal('center');
+        $sheet->getStyle('I2:L4')->getAlignment()->setVertical('center');
+
 
         /*
         |--------------------------------------------------------------------------

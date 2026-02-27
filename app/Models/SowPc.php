@@ -31,6 +31,14 @@ class SowPc extends Model
         'status',
     ];
 
+    protected $casts = [
+    'tanggal_penggunaan' => 'date',
+    'tanggal_perbaikan' => 'date',
+    'helpdesk' => 'boolean',
+    'form' => 'boolean',
+    'status' => 'boolean',
+];
+
     // RELASI
     public function case()
     {
