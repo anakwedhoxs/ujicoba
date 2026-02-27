@@ -10,6 +10,10 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Tables\Actions\Action;
+use Filament\Notifications\Notification;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\SowPcExport;
 
 class SowPcResource extends Resource
 {
@@ -146,8 +150,6 @@ class SowPcResource extends Resource
                 ->default(false)
                 ->visible(fn ($record) => auth()->user()?->hasRole('super_admin') && $record !== null),
 
-       
-
                     
             ]);
     }
@@ -197,6 +199,37 @@ class SowPcResource extends Resource
                     ]),
         
             ])
+            ->headerActions([
+            Action::make('export')
+                ->label('Export')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('primary')
+                ->disabled(fn () => SowPc::whereNull('status')->orWhere('status', true)->exists())
+                ->action(function () {
+
+                            $tanggal = now()->format('d-m-Y');
+                            $namaFile = "data-sow-PC-{$tanggal}.xlsx";
+
+                            return Excel::download(
+                                new SowPcExport(),
+                                $namaFile
+                            );
+                        }),
+
+                        Action::make('accept')
+                ->label('Accept')
+                ->icon('heroicon-o-check-circle')
+                ->color('success')
+                ->requiresConfirmation()
+                ->action(function () {
+                    Sow::query()->update(['status' => false]);
+                    Notification::make()
+                        ->title('Semua data berhasil di Accept')
+                        ->success()
+                        ->send();
+                }),
+            ])
+            
              ->actions([
                 Tables\Actions\ActionGroup::make([
                 Tables\Actions\EditAction::make(),
