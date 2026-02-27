@@ -1,0 +1,45 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('sow_cpu', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('prosesor_id')->nullable()->constrained('inventaris')->nullOnDelete();
+            $table->foreignId('ram_id')->nullable()->constrained('inventaris')->nullOnDelete();
+            $table->foreignId('motherboard_id')->nullable()->constrained('inventaris')->nullOnDelete();
+
+
+            $table->date('tanggal_penggunaan')->nullable();
+        $table->date('tanggal_perbaikan')->nullable();
+        $table->boolean('helpdesk')->default(false);
+        $table->boolean('form')->default(false);
+        $table->string('nomor_perbaikan')->nullable();
+        $table->foreignId('hostname_id')
+                ->nullable()
+                ->constrained('hostnames')
+                ->onDelete('set null');
+        $table->string('divisi')->nullable();
+        $table->foreignId('pic_id')
+              ->nullable()
+              ->constrained('pics')
+              ->onDelete('set null');
+        $table->text('keterangan')->nullable();
+        $table->string('foto')->nullable()->default('');
+        $table->string('status')->nullable();
+            $table->timestamps();
+        });
+    }
+
+
+    public function down(): void
+    {
+        Schema::dropIfExists('sow_cpu');
+    }
+};
+

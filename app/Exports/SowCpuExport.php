@@ -2,7 +2,7 @@
 
 namespace App\Exports;
 
-use App\Models\SowPc;
+use App\Models\SowCpu;
 use Illuminate\Database\Eloquent\Builder;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -14,7 +14,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-class SowPcExport implements
+class SowCpuExport implements
     FromCollection,
     WithMapping,
     ShouldAutoSize,
@@ -29,11 +29,7 @@ class SowPcExport implements
         $this->divisi = $divisi;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | LOGO
-    |--------------------------------------------------------------------------
-    */
+    // Logo perusahaan berdasarkan divisi
     public function drawings()
     {
         $logoPath = match (strtoupper($this->divisi)) {
@@ -61,20 +57,15 @@ class SowPcExport implements
         return [$drawing];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | DATA QUERY
-    |--------------------------------------------------------------------------
-    */
+    // Query data SowCpu dengan relasi dan filter divisi jika ada
     public function collection()
     {
-        return SowPc::with([
-                'case',
-                'psu',
+        return SowCpu::with([
                 'prosesor',
                 'ram',
                 'motherboard',
-                'hostname'
+                'hostname',
+                'pic' // jika ingin ditampilkan juga, bisa ditambahkan mapping
             ])
             ->when($this->divisi, fn (Builder $q) =>
                 $q->where('divisi', $this->divisi)
@@ -83,72 +74,38 @@ class SowPcExport implements
             ->get();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | MAPPING DATA KE KOLOM
-    |--------------------------------------------------------------------------
-    */
+    // Mapping data tiap baris ke kolom Excel
     public function map($sow): array
-{
-    static $no = 1;
+    {
+        static $no = 1;
 
-    return [
-        $no++,
+        return [
+            $no++,
+            strtoupper(($sow->prosesor?->Merk ?? '-') . ' ' . ($sow->prosesor?->Seri ?? '')),
+            strtoupper(($sow->ram?->Merk ?? '-') . ' ' . ($sow->ram?->Seri ?? '')),
+            strtoupper(($sow->motherboard?->Merk ?? '-') . ' ' . ($sow->motherboard?->Seri ?? '')),
+            optional($sow->tanggal_perbaikan)->format('d/m/Y') ?? '-',
+            optional($sow->tanggal_penggunaan)->format('d/m/Y') ?? '-',
+            $sow->helpdesk ? 'V' : '',
+            $sow->form ? 'V' : '',
+            $sow->nomor_perbaikan ?? '-',
+            $sow->hostname?->nama ?? '-',
+            $sow->keterangan ?? '-',
+        ];
+    }
 
-        // CASHING DAN PSU (Gabung Merk dan Seri)
-        strtoupper(
-            ($sow->case?->Merk ?? '-') . ' / ' .
-            ($sow->psu?->Merk ?? '-') . ' ' . 
-            ($sow->psu?->Seri ?? '') // Gabung merk dan seri untuk PSU
-        ),
-
-        // PROSESOR DAN RAM (Gabung Merk dan Seri)
-        strtoupper(
-            ($sow->prosesor?->Merk ?? '-') . ' ' .
-            ($sow->prosesor?->Seri ?? '') . ' / ' .
-            ($sow->ram?->Merk ?? '-') . ' ' . 
-            ($sow->ram?->Seri ?? '')
-        ),
-
-        // MOTHERBOARD (Gabung Merk dan Seri)
-        strtoupper($sow->motherboard?->Merk ?? '-' . ' ' . $sow->motherboard?->Seri ?? '-'),
-
-        optional($sow->tanggal_perbaikan)->format('d/m/Y'),
-        optional($sow->tanggal_penggunaan)->format('Y'),
-
-        $sow->helpdesk ? 'V' : '',
-        $sow->form ? 'V' : '',
-
-        $sow->nomor_perbaikan ?? '-',
-        $sow->hostname?->nama ?? '-',
-        $sow->keterangan ?? '-',
-    ];
-}
-
-    /*
-    |--------------------------------------------------------------------------
-    | DATA MULAI DARI BARIS 8
-    |--------------------------------------------------------------------------
-    */
+    // Mulai data dari cell A8
     public function startCell(): string
     {
         return 'A8';
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | STYLING & HEADER
-    |--------------------------------------------------------------------------
-    */
+    // Styling dan header sheet sesuai gambar
     public function styles(Worksheet $sheet)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | JUDUL
-        |--------------------------------------------------------------------------
-        */
+        // Judul S.O.W di tengah (merge E3:G3)
         $sheet->mergeCells('E3:G3');
-        $sheet->setCellValue('E3', 'HARDWARE: PC SET');
+        $sheet->setCellValue('E3', 'HARDWARE: CPU SET');
         $sheet->getStyle('E3')->applyFromArray([
             'font' => ['bold' => true, 'size' => 14],
             'alignment' => [
@@ -157,19 +114,13 @@ class SowPcExport implements
             ],
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | HEADER TABEL (BARIS 6–7)
-        |--------------------------------------------------------------------------
-        */
+        // Header kolom baris 6 dan 7
         $sheet->setCellValue('A6', 'No');
-        $sheet->setCellValue('B6', 'CASHING DAN PSU');
-        $sheet->setCellValue('C6', 'PROSESOR DAN RAM');
+        $sheet->setCellValue('B6', 'PROCESSOR');
+        $sheet->setCellValue('C6', 'RAM');
         $sheet->setCellValue('D6', 'MOTHERBOARD');
         $sheet->setCellValue('E6', 'Tanggal Perbaikan');
         $sheet->setCellValue('F6', 'Tanggal Pemakaian');
-
-       //$sheet->getColumnDimension('B')->setWidth(0.83);
 
         $sheet->mergeCells('G6:H6');
         $sheet->setCellValue('G6', 'SPPI');
@@ -181,15 +132,12 @@ class SowPcExport implements
         $sheet->setCellValue('G7', 'Helpdesk');
         $sheet->setCellValue('H7', 'Form');
 
+        // Merge cell yang tidak memiliki sub kolom
         foreach (['A','B','C','D','E','F','I','J','K'] as $col) {
             $sheet->mergeCells("{$col}6:{$col}7");
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | STYLE HEADER
-        |--------------------------------------------------------------------------
-        */
+        // Style header
         $sheet->getStyle('A6:K7')->applyFromArray([
             'font' => ['bold' => true],
             'alignment' => [
@@ -202,26 +150,18 @@ class SowPcExport implements
             ],
         ]);
 
+        // Atur tinggi baris header
         $sheet->getRowDimension(6)->setRowHeight(25);
         $sheet->getRowDimension(7)->setRowHeight(20);
 
-        /*
-        |--------------------------------------------------------------------------
-        | BORDER SEMUA TABEL
-        |--------------------------------------------------------------------------
-        */
+        // Border seluruh tabel data dari A6 sampai kolom K dan baris terakhir
         $lastRow = $sheet->getHighestRow();
-
         $sheet->getStyle("A6:K{$lastRow}")
             ->getBorders()
             ->getAllBorders()
             ->setBorderStyle('thin');
 
-        /*
-        |--------------------------------------------------------------------------
-        | ALIGNMENT DATA
-        |--------------------------------------------------------------------------
-        */
+        // Alignment kolom spesifik
         $sheet->getStyle("A8:A{$lastRow}")
             ->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_CENTER);

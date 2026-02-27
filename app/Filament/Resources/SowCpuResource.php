@@ -2,59 +2,35 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SowPcResource\Pages;
-use App\Models\SowPc;
-use App\Models\Inventaris;
+use App\Filament\Resources\SowCpuResource\Pages;
+use App\Filament\Resources\SowCpuResource\RelationManagers;
+use App\Models\SowCpu;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action;
-use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\SowPcExport;
+use App\Exports\SowCpuExport;
+use Filament\Tables\Actions\Action;
 
-class SowPcResource extends Resource
+
+class SowCpuResource extends Resource
 {
-    protected static ?string $model = SowPc::class;
+    protected static ?string $model = SowCpu::class;
+
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
-    protected static ?string $navigationLabel = 'Data SOW PC';
+    protected static ?string $navigationLabel = 'Data SOW CPU';
     protected static ?string $navigationGroup = 'SOW';
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('case_id')
-                    ->label('Casing')
-                    ->options(
-                        \App\Models\Inventaris::query()
-                            ->where('kategori', 'PC CASE')
-                            ->get()
-                            ->mapWithKeys(function ($item) {
-                                return [$item->id => "{$item->Merk} {$item->Seri}"];
-                            })
-                            ->toArray()
-                    )
-                    ->searchable()
-                    ->required(),
-
-
-                Forms\Components\Select::make('psu_id')
-                    ->label('POWER SUPPLY')
-                    ->options(
-                        \App\Models\Inventaris::query()
-                            ->where('kategori', 'POWER SUPPLY')
-                            ->get()
-                            ->mapWithKeys(function ($item) {
-                                return [$item->id => "{$item->Merk} {$item->Seri}"];
-                            })
-                            ->toArray()
-                    )
-                    ->searchable()
-                    ->required(),
 
                 Forms\Components\Select::make('prosesor_id')
                         ->label('PROCESSOR')
@@ -70,6 +46,7 @@ class SowPcResource extends Resource
                     ->searchable()
                     ->required(),
 
+
                 Forms\Components\Select::make('ram_id')
                     ->label('RAM')
                     ->options(
@@ -83,6 +60,7 @@ class SowPcResource extends Resource
                     )
                     ->searchable()
                     ->required(),
+
 
                 Forms\Components\Select::make('motherboard_id')
                     ->label('MOTHERBOARD')
@@ -98,12 +76,14 @@ class SowPcResource extends Resource
                     ->searchable()
                     ->required(),
 
+
                     Forms\Components\Select::make('pic_id')
                     ->label('PIC')
                     ->relationship('pic', 'nama')
                     ->searchable()
                     ->preload()
                     ->required(),
+
 
                 Forms\Components\DatePicker::make('tanggal_penggunaan'),
                 Forms\Components\DatePicker::make('tanggal_perbaikan'),
@@ -121,6 +101,7 @@ class SowPcResource extends Resource
                     ->preload()
                     ->required(),
 
+
                 Forms\Components\Select::make('divisi')
                     ->options([
                         'MCP' => 'MCP',
@@ -133,6 +114,7 @@ class SowPcResource extends Resource
            
             Forms\Components\Textarea::make('keterangan')->columnSpanFull(),
 
+
             Forms\Components\FileUpload::make('foto')
             ->label('Foto')
             ->image() // preview gambar
@@ -142,6 +124,7 @@ class SowPcResource extends Resource
             ->downloadable() // aktifkan tombol download
             ->columnSpanFull(),
 
+
              Forms\Components\Toggle::make('status')
                 ->label('Rejected')
                 ->helperText('ON = Rejected | OFF = Accept')
@@ -150,25 +133,26 @@ class SowPcResource extends Resource
                 ->default(false)
                 ->visible(fn ($record) => auth()->user()?->hasRole('super_admin') && $record !== null),
 
-                    
+
+       
+
+
+                   
             ]);
     }
+
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('case.Merk')
-                    ->label('Case'),
-
-                Tables\Columns\TextColumn::make('psu.Merk')
-                    ->label('PSU'),
-
                 Tables\Columns\TextColumn::make('prosesor.Merk')
                     ->label('Prosesor'),
 
+
                 Tables\Columns\TextColumn::make('ram.Merk')
                     ->label('RAM'),
+
 
                 Tables\Columns\TextColumn::make('motherboard.Merk')
                     ->label('Motherboard'),
@@ -197,26 +181,28 @@ class SowPcResource extends Resource
                         'MKP' => 'MKP',
                         'PPM' => 'PPM',
                     ]),
-        
+       
             ])
             ->headerActions([
             Action::make('export')
                 ->label('Export')
                 ->icon('heroicon-o-arrow-down-tray')
+                ->disabled(fn () => SowCpu::whereNull('status')->orWhere('status', true)->exists())
                 ->color('primary')
-                ->disabled(fn () => SowPc::whereNull('status')->orWhere('status', true)->exists())
+                //->disabled(fn () => Sow::whereNull('status')->orWhere('status', true)->exists())
                 ->action(function () {
 
+
                             $tanggal = now()->format('d-m-Y');
-                            $namaFile = "data-sow-PC-{$tanggal}.xlsx";
+                            $namaFile = "data-sow-CPU-{$tanggal}.xlsx";
+
 
                             return Excel::download(
-                                new SowPcExport(),
+                                new SowCpuExport(),
                                 $namaFile
                             );
                         }),
-
-                        Action::make('accept')
+                         Action::make('accept')
                 ->label('Accept')
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
@@ -229,25 +215,25 @@ class SowPcResource extends Resource
                         ->send();
                 }),
             ])
-            
              ->actions([
                 Tables\Actions\ActionGroup::make([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 ])
-                ->label('More') 
-                ->icon('heroicon-m-ellipsis-vertical') 
+                ->label('More')
+                ->icon('heroicon-m-ellipsis-vertical')
                 ->color('primary')
             ]);
     }
 
+
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSowPcs::route('/'),
-            'create' => Pages\CreateSowPc::route('/create'),
-            'edit' => Pages\EditSowPc::route('/{record}/edit'),
+            'index' => Pages\ListSowCpus::route('/'),
+            'create' => Pages\CreateSowCpu::route('/create'),
+            'edit' => Pages\EditSowCpu::route('/{record}/edit'),
         ];
     }
 }
